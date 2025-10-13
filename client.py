@@ -54,7 +54,7 @@ def get_team_players(api_key, team_id, season):
     return json.loads(all_data)["response"]
 
 
-def get_player_stats(api_key, player_id, season):
+def get_player_stats(api_key, player_id, team_id, season):
     conn.request(
         "GET",
         f"/players?id={player_id}&season={season}",
@@ -66,9 +66,16 @@ def get_player_stats(api_key, player_id, season):
     all_data = data.decode("utf-8")
     print(all_data)
 
-    if not json.loads(all_data)["response"]:
+    response_data = json.loads(all_data)["response"]
+    if not response_data:
         return None
 
-    # TODO: handle cases where statistics don't have the right team in first position
-    # see Portland Thorns 2025 J. Fleming for an example that came up as soon as I thought about it
-    return json.loads(all_data)["response"][0]["statistics"][0]
+    player_data = response_data[0]
+    statistics = player_data["statistics"]
+
+    team_stats = next(
+        (stat for stat in statistics if stat["team"]["id"] == team_id),
+        None,
+    )
+
+    return team_stats

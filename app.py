@@ -89,7 +89,7 @@ def main():
     )
 
     player_stats = client.get_player_stats(
-        st.session_state.api_key, selected_player_id, selected_year
+        st.session_state.api_key, selected_player_id, selected_team_id, selected_year
     )
 
     # TODO: BETTER
