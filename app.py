@@ -6,7 +6,9 @@ import client
 def get_api_key():
     if "api_key" not in st.session_state or not st.session_state.api_key:
         with st.container():
-            st.info("Enter your API key to use the application")
+            st.info(
+                "Enter your Football API key to use the application. You can get started for free at [API-Football](https://www.api-football.com)."
+            )
 
             api_key = st.text_input(
                 "Enter your API key:",
@@ -32,6 +34,11 @@ def main():
         page_title="Women's Soccer Stats",
         layout="wide",
         initial_sidebar_state="expanded",
+        menu_items={
+            "Get Help": "mailto:soccer@cantu.dev",
+            "Report a bug": "mailto:soccer@cantu.dev",
+            "About": f'Built using Streamlit and deployed using Heroku. \nLast deployed on {datetime.now().strftime("%d/%m/%Y at %H:%M:%S UTC")}',
+        },
     )
 
     get_api_key()  # stored in st.session_state.api_key
