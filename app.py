@@ -97,9 +97,7 @@ def setup_page():
             st.error(f"Error loading leagues: {e}")
 
 
-def player_stats_page():
-    st.title("📊 Player Stats")
-
+def verify_setup():
     if not all(
         key in st.session_state
         for key in ["api_key", "selected_league_id", "selected_year"]
@@ -111,6 +109,12 @@ def player_stats_page():
     st.success(
         f"✅ Using {st.session_state.selected_league_name} - {st.session_state.selected_year}"
     )
+
+
+def player_stats_page():
+    st.title("📊 Player Stats")
+
+    verify_setup()
 
     st.header("Select Team")
     teams = client.get_teams(
@@ -157,6 +161,32 @@ def player_stats_page():
             st.warning("No stats available for this player.")
 
 
+def fixture_stats_page():
+    st.title("📅 Fixture Stats")
+
+    verify_setup()
+    st.header("Select Fixture")
+
+    fixtures = client.get_fixtures(
+        st.session_state.api_key,
+        st.session_state.selected_league_id,
+        st.session_state.selected_year,
+    )
+
+    finished_fixtures = [
+        fixture for fixture in fixtures if fixture["fixture"]["status"]["short"] == "FT"
+    ]
+
+    finished_fixtures.sort(key=lambda x: x["fixture"]["date"], reverse=True)
+
+    cleaned_fixtures = [
+        f"{fixture['fixture']['date'].split('T')[0]}  {fixture['teams']['home']['name']} vs {fixture['teams']['away']['name']}"
+        for fixture in finished_fixtures
+    ]
+
+    st.selectbox("Select a Fixture", cleaned_fixtures)
+
+
 def main():
     st.set_page_config(
         page_title="Women's Soccer Stats",
@@ -172,6 +202,7 @@ def main():
     pages = {
         "Setup": setup_page,
         "Player Stats": player_stats_page,
+        "Fixture Stats": fixture_stats_page,
     }
 
     st.sidebar.title("Navigation")

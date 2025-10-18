@@ -64,7 +64,6 @@ def get_player_stats(api_key, player_id, team_id, season):
     res = conn.getresponse()
     data = res.read()
     all_data = data.decode("utf-8")
-    print(all_data)
 
     response_data = json.loads(all_data)["response"]
     if not response_data:
@@ -79,3 +78,29 @@ def get_player_stats(api_key, player_id, team_id, season):
     )
 
     return team_stats
+
+
+def get_rounds(api_key, league_id, season):
+    conn.request(
+        "GET",
+        f"/fixtures/rounds?league={league_id}&season={season}",
+        headers={"x-apisports-key": api_key},
+    )
+
+    res = conn.getresponse()
+    data = res.read()
+    all_data = data.decode("utf-8")
+    return json.loads(all_data)["response"]
+
+
+def get_fixtures(api_key, league_id, season):
+    conn.request(
+        "GET",
+        f"/fixtures?league={league_id}&season={season}",
+        headers={"x-apisports-key": api_key},
+    )
+
+    res = conn.getresponse()
+    data = res.read()
+    all_data = data.decode("utf-8")
+    return json.loads(all_data)["response"]
