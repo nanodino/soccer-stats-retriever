@@ -184,7 +184,25 @@ def fixture_stats_page():
         for fixture in finished_fixtures
     ]
 
-    st.selectbox("Select a Fixture", cleaned_fixtures)
+    selected_fixture = st.selectbox("Select a Fixture", cleaned_fixtures)
+    selected_fixture_id = next(
+        (
+            fixture["fixture"]["id"]
+            for fixture in finished_fixtures
+            if f"{fixture['fixture']['date'].split('T')[0]}  {fixture['teams']['home']['name']} vs {fixture['teams']['away']['name']}"
+            == selected_fixture
+        ),
+        None,
+    )
+
+    if selected_fixture_id:
+        fixture_stats = client.get_fixture_stats(
+            st.session_state.api_key,
+            selected_fixture_id,
+        )
+
+        st.header(f"📊 Match Statistics")
+        st.dataframe(fixture_stats)
 
 
 def main():

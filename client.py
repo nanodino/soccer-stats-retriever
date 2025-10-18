@@ -1,6 +1,7 @@
 import http
 import requests
 import json
+import pandas as pd
 
 base_url = "v3.football.api-sports.io"
 conn = http.client.HTTPSConnection(base_url)
@@ -104,3 +105,37 @@ def get_fixtures(api_key, league_id, season):
     data = res.read()
     all_data = data.decode("utf-8")
     return json.loads(all_data)["response"]
+
+
+def get_fixture_stats(api_key, fixture_id):
+    conn.request(
+        "GET",
+        f"/fixtures/statistics?fixture={fixture_id}",
+        headers={"x-apisports-key": api_key},
+    )
+
+    res = conn.getresponse()
+    data = res.read()
+    all_data = data.decode("utf-8")
+    response_data = json.loads(all_data)["response"]
+
+    if not response_data:
+        return None
+
+    stats_data = {}
+
+    for team_data in response_data:
+        team_name = team_data["team"]["name"]
+        statistics = team_data["statistics"]
+
+        team_stats = {}
+        for stat in statistics:
+            stat_type = stat["type"]
+            stat_value = stat["value"]
+            team_stats[stat_type] = stat_value
+
+        stats_data[team_name] = team_stats
+
+    df = pd.DataFrame(stats_data)
+
+    return df
