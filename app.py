@@ -207,7 +207,7 @@ def fixture_stats_page():
 
 def main():
     st.set_page_config(
-        page_title="Women's Soccer Stats",
+        page_title="Soccer Stats",
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={
