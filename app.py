@@ -98,17 +98,21 @@ def setup_page():
 
 
 def verify_setup():
-    if not all(
-        key in st.session_state
-        for key in ["api_key", "selected_league_id", "selected_year"]
-    ):
-        st.warning("⚠️ Please complete the setup first!")
-        st.page_link("Setup", icon="⚙️")
-        return
+    try:
+        if not all(
+            key in st.session_state
+            for key in ["api_key", "selected_league_id", "selected_year"]
+        ):
+            st.warning("⚠️ Please complete the setup first!")
+            st.page_link("Setup", icon="⚙️")
+            return
 
-    st.success(
-        f"✅ Using {st.session_state.selected_league_name} - {st.session_state.selected_year}"
-    )
+        st.success(
+            f"✅ Using {st.session_state.selected_league_name} - {st.session_state.selected_year}"
+        )
+    except Exception:
+        st.error("⚠️ Please complete the setup first!")
+        st.page_link("Setup", icon="⚙️")
 
 
 def player_stats_page():
