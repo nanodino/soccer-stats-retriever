@@ -139,3 +139,51 @@ def get_fixture_stats(api_key, fixture_id):
     df = pd.DataFrame(stats_data)
 
     return df
+
+
+def get_fixture_player_stats(api_key, fixture_id):
+    print(f"fixture_id: {fixture_id}")
+    conn.request(
+        "GET",
+        f"/fixtures/players?fixture={fixture_id}",
+        headers={"x-apisports-key": api_key},
+    )
+
+    res = conn.getresponse()
+    data = res.read()
+    all_data = data.decode("utf-8")
+    response_data = json.loads(all_data)["response"]
+
+    if not response_data:
+        return None
+
+    all_players = []
+
+    for team_data in response_data:
+        team_name = team_data["team"]["name"]
+
+        for player_data in team_data["players"]:
+            player_info = player_data["player"]
+            stats = player_data["statistics"][0]
+
+            player_row = {
+                "team": team_name,
+                "player_id": player_info["id"],
+                "player_name": player_info["name"],
+                "position": player_info.get("pos", "N/A"),
+                "number": player_info.get("number", "N/A"),
+                "minutes": stats["games"]["minutes"],
+                "rating": stats["games"]["rating"],
+                "goals": stats["goals"]["total"],
+                "assists": stats["goals"]["assists"],
+                "passes_total": stats["passes"]["total"],
+                "passes_accuracy": stats["passes"]["accuracy"],
+                "tackles": stats["tackles"]["total"],
+                "fouls_committed": stats["fouls"]["committed"],
+                "cards_yellow": stats["cards"]["yellow"],
+                "cards_red": stats["cards"]["red"],
+            }
+
+            all_players.append(player_row)
+
+    return pd.DataFrame(all_players)

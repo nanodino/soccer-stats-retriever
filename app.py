@@ -208,6 +208,14 @@ def fixture_stats_page():
         st.header(f"📊 Match Statistics")
         st.dataframe(fixture_stats)
 
+        st.header(f"📋 Player Statistics")
+        player_fixture_stats = client.get_fixture_player_stats(
+            st.session_state.api_key,
+            selected_fixture_id,
+        )
+
+        st.dataframe(player_fixture_stats.fillna(0), hide_index=True)
+
 
 def main():
     st.set_page_config(
